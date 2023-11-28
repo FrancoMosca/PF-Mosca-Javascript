@@ -1,130 +1,136 @@
-let listaDeTareas = [
-    [
-        {
-          "id": "1",
-          "descripcion": "Finish project",
-          "activo": true
-        },
-        {
-          "id": "2",
-          "descripcion": "Buy groceries",
-          "activo": true
-        },
-        {
-          "id": "3",
-          "descripcion": "Go to the gym",
-          "activo": true
-        },
-        {
-          "id": "4",
-          "descripcion": "Call mom",
-          "activo": false
-        },
-        {
-          "id": "5",
-          "descripcion": "Read a book",
-          "activo": true
-        },
-        {
-          "id": "6",
-          "descripcion": "Pay bills",
-          "activo": true
-        },
-        {
-          "id": "7",
-          "descripcion": "Clean the house",
-          "activo": true
-        },
-        {
-          "id": "8",
-          "descripcion": "Attend meeting",
-          "activo": true
-        },
-        {
-          "id": "9",
-          "descripcion": "Walk the dog",
-          "activo": false
-        },
-        {
-          "id": "10",
-          "descripcion": "Cook dinner",
-          "activo": false
-        }
-      ]
-];
-elegirOpcion()
-function elegirOpcion(){
-    let opcion = prompt('Que accion desea realizar: 1.Añadir una tarea 2.Eliminar una tarea 3.Editar una tarea 4.Ver todas las tareas 5.Ver tareas inactivas')
-    switch(opcion){
-        case "1":
-            anadirTarea();
-            break;
-        case "2":
-            eliminarTarea();
-            break;
-        case "3": 
-            editarTarea();
-            break;
-        case "4":
-            verTareas();
-            break;
-        case "5":
-            getTaresInactivas();
-            break;
+let listaDeTareas = [];
+
+function anadirTarea() {
+  // let descripcion = prompt("Ingrese la tarea");
+  var input = document.getElementById("inputTarea");
+  var valor = input.value;
+
+  let tarea = {
+    id: (listaDeTareas.length + 1).toString(),
+    descripcion: valor,
+    activo: true,
+  };
+
+  if (valor === "") {
+    console.log("Ingrese un valor valido");
+  } else {
+    listaDeTareas.push(tarea);
+    localStorage.setItem("listaDeTareas", JSON.stringify(listaDeTareas));
+    hideDialog();
+  }
+  mostrarTareas();
+}
+
+function eliminarTarea(tareaId) {
+  if (tareaId >= 1 && tareaId <= listaDeTareas.length) {
+    listaDeTareas.splice(tareaId - 1, 1);
+  } else {
+    console.log("Id no válido");
+  }
+  localStorage.setItem("listaDeTareas", JSON.stringify(listaDeTareas));
+  mostrarTareas();
+}
+
+function editarTarea(tareaId) {
+  if (tareaId >= 1 && tareaId <= listaDeTareas.length) {
+    listaDeTareas[tareaId - 1].activo = !listaDeTareas[tareaId - 1].activo;
+  } else {
+    console.log("Id no válido");
+  }
+  localStorage.setItem("listaDeTareas", JSON.stringify(listaDeTareas));
+  mostrarTareas();
+}
+
+// function getTaresInactivas() {
+//   const tareasInactivas = listaDeTareas.filter((tarea) => !tarea.activo);
+//   console.log(tareasInactivas);
+// }
+
+function mostrarTareas() {
+  const contenedorTareas = document.getElementById("contenedor-tareas");
+
+  contenedorTareas.innerHTML = "";
+
+  const listaDeTareasGuardadas = localStorage.getItem("listaDeTareas");
+
+  if (listaDeTareasGuardadas) {
+    listaDeTareas = JSON.parse(listaDeTareasGuardadas);
+  }
+
+  listaDeTareas.forEach((tarea) => {
+    const article = document.createElement("article");
+    article.classList.add(
+      "w-3/4",
+      "mt-10",
+      "bg-purple-700",
+      "shadow-purple-950",
+      "rounded-full",
+      "p-4",
+      "flex",
+      "flex-row",
+      "items-center",
+      "justify-center",
+      "text-center",
+      "text-xl",
+      "font-poppins",
+      "font-medium",
+      "text-white"
+    );
+
+    const parrafo = document.createElement("p");
+    parrafo.classList.add("py-2");
+    parrafo.textContent = tarea.descripcion;
+    parrafo.addEventListener("click", () => editarTarea(tarea.id));
+
+    if (!tarea.activo) {
+      parrafo.classList.add("line-through");
+      article.classList.replace("bg-purple-700", "bg-purple-900");
     }
+
+    const div = document.createElement("div");
+    div.classList.add("cursor-pointer", "ml-3");
+    div.addEventListener("click", () => eliminarTarea(tarea.id));
+
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("stroke-width", "1.5");
+    svg.setAttribute("stroke", "currentColor");
+    svg.classList.add("w-6", "h-6");
+
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("stroke-linecap", "round");
+    path.setAttribute("stroke-linejoin", "round");
+    path.setAttribute(
+      "d",
+      "M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+    );
+
+    svg.appendChild(path);
+    div.appendChild(svg);
+
+    article.appendChild(parrafo);
+    article.appendChild(div);
+
+    contenedorTareas.appendChild(article);
+  });
 }
 
-function anadirTarea(){
-    let descripcion = prompt('Ingrese la tarea');
-    let tarea = new Tarea( descripcion )
-
-    listaDeTareas.push(tarea)
-    console.log(tarea);
-    console.log(listaDeTareas);
-    console.log("Se ha añadido la tarea");
+function showDialog() {
+  let dialog = document.getElementById("dialog");
+  dialog.classList.remove("hidden");
+  setTimeout(() => {
+    dialog.classList.remove("opacity-0");
+  }, 20);
 }
 
-function eliminarTarea(){
-    let id = prompt("Qué número de tarea desea eliminar?");
-
-    id = id - 1;
-
-    if(id >= 0 && id < listaDeTareas.length) {
-        console.log("Tarea eliminada:", listaDeTareas[id]);
-        listaDeTareas.splice(id, 1);
-    } else {
-        console.log("Id no válido");
-    }
+function hideDialog() {
+  let dialog = document.getElementById("dialog");
+  dialog.classList.add("opacity-0");
+  setTimeout(() => {
+    dialog.classList.add("hidden");
+  }, 500);
 }
 
-function editarTarea(){
-    let id = prompt("¿Qué número de tarea desea editar?");
-
-    id = id - 1;
-
-    if(id >= 0 && id < listaDeTareas.length){
-        let nuevaTarea = prompt("Ingrese la nueva tarea");
-        listaDeTareas[id] = (id + 1 + ".") + nuevaTarea;
-        console.log("Tarea editada exitosamente");
-    }
-    else{
-        console.log("Id no válido");
-    }
-}
-
-function verTareas(){
-    if(listaDeTareas.length === 0){
-        console.log("La lista de tareas esta vacia");
-    }else{
-        console.log("LISTA DE TAREAS");
-        console.log("---------------");
-        for(let i = 0; i < listaDeTareas.length; i++) {
-            console.log(listaDeTareas[i]);
-        }
-    }
-}
-
-function getTaresInactivas(){
-    const tareasInactivas = listaDeTareas[0].filter(tarea => !tarea.activo);
-    console.log(tareasInactivas)
-}
+mostrarTareas();
