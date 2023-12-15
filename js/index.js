@@ -31,28 +31,33 @@ const anadirTarea = async () => {
   } else {
     listaDeTareas.push(tarea);
     localStorage.setItem("listaDeTareas", JSON.stringify(listaDeTareas));
-    console.log(listaDeTareas)
     hideDialog();
   }
   mostrarTareas();
 };
 
 const eliminarTarea = (tareaId) => {
-  if (tareaId >= 1 && tareaId <= listaDeTareas.length) {
-    listaDeTareas.splice(tareaId - 1, 1);
+  const tareaIndex = listaDeTareas.findIndex(tarea => tarea.id === tareaId);
+  
+  if (tareaIndex !== -1) {
+    listaDeTareas.splice(tareaIndex, 1);
   } else {
     console.log("Id no válido");
   }
+  
   localStorage.setItem("listaDeTareas", JSON.stringify(listaDeTareas));
   mostrarTareas();
 };
 
 const editarTarea = (tareaId) => {
   if (tareaId >= 1 && tareaId <= listaDeTareas.length) {
-    listaDeTareas[tareaId - 1].activo = !listaDeTareas[tareaId - 1].activo;
+    const tarea = listaDeTareas[tareaId - 1];
+    // Aquí puedes realizar las modificaciones necesarias en la tarea
+    tarea.activo = !tarea.activo;
   } else {
     console.log("Id no válido");
   }
+  
   localStorage.setItem("listaDeTareas", JSON.stringify(listaDeTareas));
   mostrarTareas();
 };
@@ -100,11 +105,9 @@ const mostrarTareas = () => {
 
     const div = document.createElement("div");
     div.classList.add("cursor-pointer", "ml-3");
-    div.addEventListener("click", () => {
+    div.addEventListener("click", () => 
       eliminarTarea(tarea.id),
-      console.log(tarea)
-      console.log(tarea.id)
-    });
+    );
 
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
