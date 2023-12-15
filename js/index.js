@@ -1,12 +1,27 @@
 let listaDeTareas = [];
 
-function anadirTarea() {
-  // let descripcion = prompt("Ingrese la tarea");
+function showDialog() {
+  let dialog = document.getElementById("dialog");
+  dialog.classList.remove("hidden");
+  setTimeout(() => {
+    dialog.classList.remove("opacity-0");
+  }, 20);
+}
+
+function hideDialog() {
+  let dialog = document.getElementById("dialog");
+  dialog.classList.add("opacity-0");
+  setTimeout(() => {
+    dialog.classList.add("hidden");
+  }, 500);
+}
+
+const anadirTarea = async () => {
   var input = document.getElementById("inputTarea");
   var valor = input.value;
 
   let tarea = {
-    id: (listaDeTareas.length + 1).toString(),
+    id: (listaDeTareas.length + 1),
     descripcion: valor,
     activo: true,
   };
@@ -16,12 +31,13 @@ function anadirTarea() {
   } else {
     listaDeTareas.push(tarea);
     localStorage.setItem("listaDeTareas", JSON.stringify(listaDeTareas));
+    console.log(listaDeTareas)
     hideDialog();
   }
   mostrarTareas();
-}
+};
 
-function eliminarTarea(tareaId) {
+const eliminarTarea = (tareaId) => {
   if (tareaId >= 1 && tareaId <= listaDeTareas.length) {
     listaDeTareas.splice(tareaId - 1, 1);
   } else {
@@ -29,9 +45,9 @@ function eliminarTarea(tareaId) {
   }
   localStorage.setItem("listaDeTareas", JSON.stringify(listaDeTareas));
   mostrarTareas();
-}
+};
 
-function editarTarea(tareaId) {
+const editarTarea = (tareaId) => {
   if (tareaId >= 1 && tareaId <= listaDeTareas.length) {
     listaDeTareas[tareaId - 1].activo = !listaDeTareas[tareaId - 1].activo;
   } else {
@@ -39,14 +55,9 @@ function editarTarea(tareaId) {
   }
   localStorage.setItem("listaDeTareas", JSON.stringify(listaDeTareas));
   mostrarTareas();
-}
+};
 
-// function getTaresInactivas() {
-//   const tareasInactivas = listaDeTareas.filter((tarea) => !tarea.activo);
-//   console.log(tareasInactivas);
-// }
-
-function mostrarTareas() {
+const mostrarTareas = () => {
   const contenedorTareas = document.getElementById("contenedor-tareas");
 
   contenedorTareas.innerHTML = "";
@@ -89,7 +100,11 @@ function mostrarTareas() {
 
     const div = document.createElement("div");
     div.classList.add("cursor-pointer", "ml-3");
-    div.addEventListener("click", () => eliminarTarea(tarea.id));
+    div.addEventListener("click", () => {
+      eliminarTarea(tarea.id),
+      console.log(tarea)
+      console.log(tarea.id)
+    });
 
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
@@ -115,22 +130,6 @@ function mostrarTareas() {
 
     contenedorTareas.appendChild(article);
   });
-}
-
-function showDialog() {
-  let dialog = document.getElementById("dialog");
-  dialog.classList.remove("hidden");
-  setTimeout(() => {
-    dialog.classList.remove("opacity-0");
-  }, 20);
-}
-
-function hideDialog() {
-  let dialog = document.getElementById("dialog");
-  dialog.classList.add("opacity-0");
-  setTimeout(() => {
-    dialog.classList.add("hidden");
-  }, 500);
-}
+};
 
 mostrarTareas();
