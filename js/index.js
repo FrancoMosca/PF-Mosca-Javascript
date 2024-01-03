@@ -27,10 +27,11 @@ const anadirTarea = async () => {
   };
 
   if (valor === "") {
-    console.log("Ingrese un valor valido");
+    Swal.fire("Error", "Ingrese un valor válido", "error");
   } else {
     listaDeTareas.push(tarea);
     localStorage.setItem("listaDeTareas", JSON.stringify(listaDeTareas));
+    Swal.fire("Añadida", "La tarea ha sido añadida", "success");
     hideDialog();
   }
   mostrarTareas();
@@ -40,13 +41,26 @@ const eliminarTarea = (tareaId) => {
   const tareaIndex = listaDeTareas.findIndex(tarea => tarea.id === tareaId);
   
   if (tareaIndex !== -1) {
-    listaDeTareas.splice(tareaIndex, 1);
+    Swal.fire({
+      title: "Confirmar",
+      text: "¿Estás seguro de eliminar esta tarea?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí",
+      cancelButtonText: "Cancelar"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        listaDeTareas.splice(tareaIndex, 1);
+        localStorage.setItem("listaDeTareas", JSON.stringify(listaDeTareas));
+        mostrarTareas();
+        Swal.fire("Eliminada", "La tarea ha sido eliminada", "success");
+      }
+    });
   } else {
-    console.log("Id no válido");
+    Swal.fire("Error", "Id no válido", "error");
   }
-  
-  localStorage.setItem("listaDeTareas", JSON.stringify(listaDeTareas));
-  mostrarTareas();
 };
 
 const editarTarea = (tareaId) => {
