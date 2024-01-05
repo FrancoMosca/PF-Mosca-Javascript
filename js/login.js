@@ -1,4 +1,4 @@
-const DB_PATH = "./PF-Mosca-Javascript/users.json";
+const DB_PATH = "./users.json";
 
 const userSignIn = async () => {
   const username = userEmail.value;
