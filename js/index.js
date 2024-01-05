@@ -17,11 +17,20 @@ function hideDialog() {
 }
 
 const anadirTarea = async () => {
-  var input = document.getElementById("inputTarea");
-  var valor = input.value;
+  let input = document.getElementById("inputTarea");
+  let valor = input.value;
+
+  const usuario = JSON.parse(localStorage.getItem('currentUser'));
+  const username = usuario.username;
+
+  let listaDeTareasGuardadas = localStorage.getItem(`listaDeTareas_${username}`);
+
+  if (listaDeTareasGuardadas) {
+    listaDeTareas = JSON.parse(listaDeTareasGuardadas);
+  }
 
   let tarea = {
-    id: (listaDeTareas.length + 1),
+    id: `${username}_${listaDeTareas.length + 1}`, // Utilizar el usuario como parte del identificador
     descripcion: valor,
     activo: true,
   };
@@ -30,7 +39,7 @@ const anadirTarea = async () => {
     Swal.fire("Error", "Ingrese un valor válido", "error");
   } else {
     listaDeTareas.push(tarea);
-    localStorage.setItem("listaDeTareas", JSON.stringify(listaDeTareas));
+    localStorage.setItem(`listaDeTareas_${username}`, JSON.stringify(listaDeTareas));
     Swal.fire("Añadida", "La tarea ha sido añadida", "success");
     hideDialog();
   }
@@ -39,7 +48,7 @@ const anadirTarea = async () => {
 
 const eliminarTarea = (tareaId) => {
   const tareaIndex = listaDeTareas.findIndex(tarea => tarea.id === tareaId);
-  
+
   if (tareaIndex !== -1) {
     Swal.fire({
       title: "Confirmar",
@@ -53,7 +62,9 @@ const eliminarTarea = (tareaId) => {
     }).then((result) => {
       if (result.isConfirmed) {
         listaDeTareas.splice(tareaIndex, 1);
-        localStorage.setItem("listaDeTareas", JSON.stringify(listaDeTareas));
+        const usuario = JSON.parse(localStorage.getItem('currentUser'));
+        const username = usuario.username;
+        localStorage.setItem(`listaDeTareas_${username}`, JSON.stringify(listaDeTareas));
         mostrarTareas();
         Swal.fire("Eliminada", "La tarea ha sido eliminada", "success");
       }
@@ -64,16 +75,17 @@ const eliminarTarea = (tareaId) => {
 };
 
 const editarTarea = (tareaId) => {
-  if (tareaId >= 1 && tareaId <= listaDeTareas.length) {
-    const tarea = listaDeTareas[tareaId - 1];
-    // Aquí puedes realizar las modificaciones necesarias en la tarea
+  const tarea = listaDeTareas.find(tarea => tarea.id === tareaId);
+
+  if (tarea) {
     tarea.activo = !tarea.activo;
+    const usuario = JSON.parse(localStorage.getItem('currentUser'));
+    const username = usuario.username;
+    localStorage.setItem(`listaDeTareas_${username}`, JSON.stringify(listaDeTareas));
+    mostrarTareas();
   } else {
     console.log("Id no válido");
   }
-  
-  localStorage.setItem("listaDeTareas", JSON.stringify(listaDeTareas));
-  mostrarTareas();
 };
 
 const mostrarTareas = () => {
@@ -81,7 +93,10 @@ const mostrarTareas = () => {
 
   contenedorTareas.innerHTML = "";
 
-  const listaDeTareasGuardadas = localStorage.getItem("listaDeTareas");
+  const usuario = JSON.parse(localStorage.getItem('currentUser'));
+  const username = usuario.username;
+
+  const listaDeTareasGuardadas = localStorage.getItem(`listaDeTareas_${username}`);
 
   if (listaDeTareasGuardadas) {
     listaDeTareas = JSON.parse(listaDeTareasGuardadas);
